@@ -1,0 +1,12 @@
+[project]
+name = "blender-globe"
+version = "0.1.0"
+description = "A WGS 84 ellipsoid Earth in Blender, built from Natural Earth vector data"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pyproj>=3.7.2",
+    "pyshp>=3.1.4",
+    "shapely>=2.1.2",
+    "triangle>=20250106",
+]
