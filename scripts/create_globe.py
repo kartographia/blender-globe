@@ -4,7 +4,7 @@ create_globe.py  (run inside Blender)
 Create the base WGS 84 ellipsoid ("Globe") centered at the world origin, plus
 the Equator and Prime Meridian reference bands.
 
-- UV sphere (64 x 32), scaled X/Y -> a and Z -> b, scale baked into the mesh
+- UV sphere (256 x 128: smooth limb at close framing), scaled X/Y -> a and Z -> b, scale baked into the mesh
   (object scale stays 1,1,1).
 - Scale: 1 Blender unit = 1000 km.  a ~ 6.378, b ~ 6.357 units.
 - Orientation: lon 0 -> +X, lon 90E -> +Y, North Pole -> +Z.
@@ -22,6 +22,7 @@ A_U = A_M / UNIT_M
 B_U = B_M / UNIT_M
 
 BAND_TUBE = 0.06   # reference band tube radius (~60 km)
+SEGMENTS, RINGS = 256, 128
 
 
 def _remove(name):
@@ -48,8 +49,9 @@ def _emissive_material(name, rgb, strength=0.6):
 
 def create_ellipsoid():
     _remove("Cube")      # default startup cube, if present
+    _remove("Light")     # default startup 1000 W point light: sits 0.9 units above Scandinavia and burns a hotspot
     _remove("Globe")
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=64, ring_count=32, radius=1.0,
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=SEGMENTS, ring_count=RINGS, radius=1.0,
                                          location=(0.0, 0.0, 0.0))
     globe = bpy.context.active_object
     globe.name = "Globe"

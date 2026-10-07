@@ -2,16 +2,21 @@
 build_all.py — rebuild the whole globe scene in one go.
 
 Headless (no MCP needed), from the project root:
-    blender -b --factory-startup --python scripts/build_all.py -- [--no-render] [--save]
+    blender -b --factory-startup --python scripts/build_all.py -- [--style photo|vector] [--view day|night]
+                                                                   [--no-render] [--save]
 
 Or inside a running Blender (MCP execute_blender_code / Text Editor):
     p = "<repo>/scripts/build_all.py"
     exec(compile(open(p).read(), p, "exec"), {"__name__": "__main__", "__file__": p})
 
 Requires the Natural Earth data (scripts/fetch_data.sh) and the triangulated
-.npz meshes (see RECIPE.md step 3) to exist first.
+.npz meshes (see RECIPE.md step 3) to exist first; the photo style also needs
+Data/rasters/ (scripts/fetch_rasters.sh + scripts/prepare_rasters.py).
 
 Flags (after `--`):
+    --style S     photo (default: NASA day/night/cloud rasters, atmosphere -> renders/globe_photo_<view>.png)
+                  or vector (the original flat-colored Natural Earth look -> renders/globe_render.png)
+    --view V      a view preset from render_globe.VIEWS (default: night for photo, day for vector)
     --no-render   skip the final render
     --save        save the scene to <repo>/Globe.blend
 """
@@ -31,8 +36,14 @@ STEPS = [
     "add_polygon_layers.py",  # lakes, glaciers, Antarctic ice shelves
     "add_rivers.py",          # rivers + lake centerlines
 ]
+PHOTO_STEPS = [
+    "add_photoreal.py",       # NASA rasters on the surface, clouds + atmosphere shells
+]
 
 args = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
+style = args[args.index("--style") + 1] if "--style" in args else "photo"
+if style not in ("photo", "vector"):
+    raise SystemExit(f"--style must be photo or vector, not {style!r}")
 
 
 def run(script):
@@ -42,7 +53,7 @@ def run(script):
 
 
 if __name__ == "__main__":
-    for step in STEPS:
+    for step in STEPS + (PHOTO_STEPS if style == "photo" else []):
         run(step)
     if "--no-render" not in args:
         run("render_globe.py")

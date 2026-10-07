@@ -3,21 +3,38 @@
 __pycache__/
 *.py[cod]
 
+
 # --- Data: downloaded + generated (re-create with scripts/fetch_data.sh and
 #     scripts/build_land_mesh.py; see RECIPE.md) ---
 Data/
+
 
 # --- Blender ---
 # Scenes are large binaries and fully regenerable via scripts/build_all.py.
 # Remove the *.blend line (or use Git LFS) if you want to version the scene.
 *.blend
 *.blend[0-9]*
+.syncignore
 
-# --- Renders: keep only the README hero image ---
+
+# --- Renders: keep only the README images ---
 renders/*
 !renders/globe_render.png
+!renders/readme/
 
-# --- OS / editor ---
+
+[claude]*
+
+
+# --- Scratch: reference images and comparison crops (third-party references aren't ours to publish) ---
+temp/
+
+
+
+# --- OS / editor / local tool settings ---
 .DS_Store
+Thumbs.db
+desktop.ini
 .idea/
 .vscode/
+.claude/settings.local.json

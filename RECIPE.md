@@ -146,16 +146,31 @@ curves at offset 0.013.
 
 ---
 
+## 8b. Photoreal surface, clouds, atmosphere  [shell + Blender]  *(optional)*
+
+Shell, once: `bash scripts/fetch_rasters.sh` (Blue Marble for the render month(s) — pass months like
+`07 10` — plus Black Marble, clouds, GEBCO elevation; ~86 MB into `Data/rasters_src/`), then
+`uv run python scripts/prepare_rasters.py` (→ 8192×4096 `Data/rasters/*`, ~22 MB).
+
+Blender: run `scripts/add_photoreal.py`. It builds a `GeodeticUV` node group (object position →
+geodetic lon/lat → equirectangular UV), gives land meshes a rough relief-bumped Blue Marble material and
+Globe/Lakes a glossy water one, both emitting Black Marble city lights where `dot(normal, SunDir) < 0`, adds a
+`Clouds` shell (offset 0.025) and an emissive `Atmosphere` shell (offset 0.12, no shadows), and hides Rivers.
+Tuning constants are at the top of the script. `render_globe.py` detects the photo scene by the `Atmosphere`
+object and adds the fill light, stars, bloom and AgX.
+
+---
+
 ## 9. Lighting + render  [Blender]
 
-Run `scripts/render_globe.py`. Set the UTC instant at the top
-(`Y, MO, D, HH, MM`). It:
+Run `scripts/render_globe.py`. Pick a preset in `VIEWS` at the top (UTC instant `(Y, MO, D, HH, MM)`
+plus camera; `-- --view NAME` when run headless). It:
 - computes the **subsolar point** (sun-overhead lat/lon) for that UTC,
 - aims a **SUN** lamp there (parallel rays, 0.526° angular size), so exactly
   the correct hemisphere is lit,
 - adds a framed **GlobeCam** and a dark space world,
 - hides reference geometry (Equator/PrimeMeridian/Oceans) from the render,
-- renders EEVEE → `renders/globe_render.png`.
+- renders EEVEE → `renders/globe_render.png` (vector) or `renders/globe_photo_<view>.png` (photo).
 
 > The script picks `BLENDER_EEVEE_NEXT` (Blender 4.2–4.x) or `BLENDER_EEVEE`
 > (5.x) automatically. Set `scene.render.engine = 'CYCLES'` for higher-quality

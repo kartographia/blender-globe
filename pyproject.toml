@@ -5,6 +5,7 @@ description = "A WGS 84 ellipsoid Earth in Blender, built from Natural Earth vec
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "pillow>=12.3.0",
     "pyproj>=3.7.2",
     "pyshp>=3.1.4",
     "shapely>=2.1.2",
